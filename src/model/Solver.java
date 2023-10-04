@@ -21,7 +21,8 @@ import distanceMatrices.DepotToCustomersDistanceMatrix;
 import distanceMatrices.DepotToSatellitesDistanceMatrix;
 import distanceMatrices.SatelliteToCustomersDistanceMatrix;
 import globalParameters.GlobalParameters;
-import msh.CPLEXSetPartitioningSolver;
+import msh.AssemblyFunction;
+import msh.GurobiSetPartitioningSolver;
 import msh.MSH;
 import msh.OrderFirstSplitSecondSampling;
 import split.FirstEchelonEnumeration;
@@ -141,7 +142,8 @@ public class Solver {
 					
 			// 4. Creates an assembler:
 				
-				CPLEXSetPartitioningSolver assembler = new CPLEXSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data);
+				//CPLEXSetPartitioningSolver assembler = new CPLEXSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data);
+				GurobiSetPartitioningSolver assembler = new GurobiSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data);
 				
 			// 5. Initializes the MSH:
 				
@@ -262,7 +264,8 @@ public class Solver {
 						
 						msh.addSamplingFunction(f_nn_fe);
 						
-					for(int i = 1 ; i < data.getFleet1(); i++) {
+					
+					for(int i = 1 ; i <= data.getNumber_of_copies(); i++) {
 					
 						 Split split_fe_duplicates = new FirstEchelonEnumerationSingle(distances_depot_satellites);
 						
@@ -890,7 +893,7 @@ public class Solver {
 	 * @param msh
 	 * @param assembler
 	 */
-	public void printSolution(MSH msh, CPLEXSetPartitioningSolver assembler,DataHandler data) {
+	public void printSolution(MSH msh, AssemblyFunction assembler,DataHandler data) {
 		
 		// 1. Defines the path for the txt file:
 		
@@ -1005,7 +1008,7 @@ public class Solver {
 	 * @param msh
 	 * @param assembler
 	 */
-	public void printSummary(MSH msh, CPLEXSetPartitioningSolver assembler,DataHandler data) {
+	public void printSummary(MSH msh, AssemblyFunction assembler,DataHandler data) {
 	
 		// 1. Defines the path for the txt file:
 		

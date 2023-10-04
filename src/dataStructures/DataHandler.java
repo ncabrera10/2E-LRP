@@ -67,6 +67,11 @@ public class DataHandler {
 	
 	private int fixed_cost2;
 	
+	/**
+	 * Number of copies for single satellite FE routes
+	 */
+	
+	private int number_of_copies;
 	
 	
 	/**
@@ -182,12 +187,16 @@ public class DataHandler {
 			
 			// Customers demands
 				
+				double total_demand = 0;
 				demands = new ArrayList<Double>();
 				line = buff.readLine();
 				for(int i = 1 ; i < nbCustomers+1; i++) {
 					demands.add(Double.parseDouble(line.trim()));
 					line = buff.readLine();
+					total_demand += demands.get(demands.size()-1);
 				}
+				
+				setNumber_of_copies((int) Math.ceil(total_demand / Q1));
 			
 			// Satellites opening costs
 				
@@ -260,13 +269,15 @@ public class DataHandler {
 					
 				//6. Customers information
 					
+					double total_demand = 0;
 					demands = new ArrayList<Double>();
 					for(int i = 1 ; i < nbCustomers+1; i++) {
 						attrs = line.split("	");
 						demands.add(Double.parseDouble(attrs[2].trim()));
 						line = buff.readLine();
+						total_demand += demands.get(demands.size()-1);
 					}
-			
+					setNumber_of_copies((int) Math.ceil(total_demand / Q1));
 				
 
 			}	
@@ -502,6 +513,14 @@ public class DataHandler {
 	 */
 	public void setSatellites_opening(ArrayList<Double> satellites_opening) {
 		this.satellites_opening = satellites_opening;
+	}
+
+	public int getNumber_of_copies() {
+		return number_of_copies;
+	}
+
+	public void setNumber_of_copies(int number_of_copies) {
+		this.number_of_copies = number_of_copies;
 	}
 	
 	
