@@ -22,6 +22,7 @@ import distanceMatrices.DepotToSatellitesDistanceMatrix;
 import distanceMatrices.SatelliteToCustomersDistanceMatrix;
 import globalParameters.GlobalParameters;
 import msh.AssemblyFunction;
+import msh.CPLEXSetPartitioningSolver;
 import msh.GurobiSetPartitioningSolver;
 import msh.MSH;
 import msh.OrderFirstSplitSecondSampling;
@@ -142,8 +143,8 @@ public class Solver {
 					
 			// 4. Creates an assembler:
 				
-				//CPLEXSetPartitioningSolver assembler = new CPLEXSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data);
-				GurobiSetPartitioningSolver assembler = new GurobiSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data);
+				CPLEXSetPartitioningSolver assembler = new CPLEXSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data); //CPLEX
+				//GurobiSetPartitioningSolver assembler = new GurobiSetPartitioningSolver(data.getNbCustomers(),data.getNbSat(),true,data); //GUROBI
 				
 			// 5. Initializes the MSH:
 				
