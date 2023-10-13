@@ -11,7 +11,7 @@ import model.Manager;
  * The user can select the instance and the implementation modifying the main method.
  * 
  * Instances:
- * 	Set: Breunig et al. 
+ * 	Set: Prodhon/Nguyen 
  * 
  * If you want to change more parameters, you can modify the "parametersCG.xml" file.
  * For example:
@@ -21,6 +21,7 @@ import model.Manager;
  * 
  * if you want to use cplex don't forget to include a line like this in the run configurations: -Djava.library.path=/Applications/CPLEX_Studio221/cplex/bin/x86-64_osx
  * and to uncomment line 151 in the src/msh/solver.java class
+ * 
  * @author nicolas.cabrera-malik
  *
  */
@@ -36,7 +37,7 @@ public class Main {
 	
 				String fileName = "ExperimentsAllSets.txt"; 
 				
-			// Select the instance you want to run, (i.e., the line of the txt file): 1-285
+			// Select the instance you want to run, (i.e., the line of the txt file): 1-54
 			
 				int current_instance = 1; 
 				

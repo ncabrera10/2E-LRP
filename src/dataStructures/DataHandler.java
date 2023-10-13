@@ -123,7 +123,7 @@ public class DataHandler {
 			
 			BufferedReader buff = new BufferedReader(new FileReader(path));
 		
-			if(path.contains("coord")) { //Prodhon instances
+			if(path.contains("coord")) { //Nguyen instances
 				
 				//1. Reads the number of customers:
 				
@@ -216,7 +216,7 @@ public class DataHandler {
 				fixed_cost1 = Integer.parseInt(line);
 				
 				
-			}else { //Nguyen instances
+			}else { //Prodhon instances
 				
 				// Skips the first line
 				

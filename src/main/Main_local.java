@@ -13,7 +13,7 @@ import model.Manager;
  * The user can select the instance and the implementation modifying the main method.
  * 
  * Instances:
- * 	Set: Breunig et al. 
+ * 	Set: Prodhon/Nguyen 
  * 
  * If you want to change more parameters, you can modify the "parametersCG.xml" file.
  * For example:
@@ -37,7 +37,7 @@ public class Main_local {
 	
 				String fileName = args[0]; 
 				
-			// Select the instance you want to run, (i.e., the line of the txt file): 1-285
+			// Select the instance you want to run, (i.e., the line of the txt file): 1-54
 			
 				int current_instance = Integer.parseInt(args[1]); 
 				

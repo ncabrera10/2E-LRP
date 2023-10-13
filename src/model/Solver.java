@@ -90,7 +90,9 @@ public class Solver {
 			
 				this.instance_identifier = instance_identif;
 				this.instance_name = instance_identif.replace(".dat", "");
-			
+				this.instance_name = this.instance_name.replace(".txt", "");
+				
+				
 			//1. Starts the counter for the initialization step:
 			
 				Double IniTime = (double) System.nanoTime();
@@ -960,16 +962,16 @@ public class Solver {
 						
 						String route = "";
 						route += assembler.solution_se_satellites.get(counter_se)+" -> ";
-						pw_arcs.println(assembler.solution_se_satellites.get(counter_se)+";"+(r.getRoute().get(1)+data.getNbSat())+";"+1+";"+counter);
+						pw_arcs.println(assembler.solution_se_satellites.get(counter_se)+";"+(r.getRoute().get(1)+data.getNbSat())+";"+2+";"+counter);
 						
 						for(int pos=1;pos < r.getRoute().size()-1;pos++) {
 							
 							if(pos<r.getRoute().size()-2) {
-								pw_arcs.println((r.getRoute().get(pos)+data.getNbSat())+";"+(r.getRoute().get(pos+1)+data.getNbSat())+";"+1+";"+counter);
+								pw_arcs.println((r.getRoute().get(pos)+data.getNbSat())+";"+(r.getRoute().get(pos+1)+data.getNbSat())+";"+2+";"+counter);
 								route += (r.getRoute().get(pos)+data.getNbSat())+"("+data.getDemands().get(r.getRoute().get(pos)-1)+")"+" -> ";
 								
 							}else {
-								pw_arcs.println((r.getRoute().get(pos)+data.getNbSat())+";"+assembler.solution_se_satellites.get(counter_se)+";"+1+";"+counter);
+								pw_arcs.println((r.getRoute().get(pos)+data.getNbSat())+";"+assembler.solution_se_satellites.get(counter_se)+";"+2+";"+counter);
 								route += (r.getRoute().get(pos)+data.getNbSat())+"("+data.getDemands().get(r.getRoute().get(pos)-1)+")"+" -> ";
 								
 							}
