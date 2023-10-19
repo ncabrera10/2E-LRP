@@ -16,11 +16,30 @@ public class Manager {
 	 * Runs the MSH algorithm
 	 */
 	
-	public Solver runMSH(String instance_identifier)throws IOException, InterruptedException {
+	public Solver_cplex runMSH(String instance_identifier)throws IOException, InterruptedException {
 		
 		// Creates a solver instance:
 		
-			Solver solver = new Solver();
+			Solver_cplex solver = new Solver_cplex();
+		
+		// Runs the MSH:
+		
+			solver.MSH(instance_identifier);
+		
+		// Returns the solver instance:
+		
+			return solver;
+	}
+	
+	/**
+	 * Runs the MSH algorithm
+	 */
+	
+	public Solver_gurobi runMSH_gurobi(String instance_identifier)throws IOException, InterruptedException {
+		
+		// Creates a solver instance:
+		
+			Solver_gurobi solver = new Solver_gurobi();
 		
 		// Runs the MSH:
 		

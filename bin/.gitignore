@@ -1,6 +1,8 @@
-/split/
-/msh/
-/model/
 /main/
-/dataStructures/
+/model/
+/core/
 /globalParameters/
+/msh/
+/distanceMatrices/
+/split/
+/experiments/
