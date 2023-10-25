@@ -416,7 +416,11 @@ public class CPLEXSetPartitioningSolver extends AssemblyFunction{
 		
 			 boolean keepGoing = true;
 			 
-			 while(keepGoing) {
+			 int iterationsMIP = 1;
+			 
+			 while(keepGoing && GlobalParameters.IMPROVEMENT_MIP_MAX_ITERATIONS >= iterationsMIP) {
+				 
+				 iterationsMIP++;
 				 
 				//Step 1: Build the pools we will use:
 				 
@@ -1301,10 +1305,13 @@ public class CPLEXSetPartitioningSolver extends AssemblyFunction{
 												
 												for(int jj = 0; jj < j; jj++) {
 													int node_in_remove_pos_act = r_updated.get(position_to_start_rem);
-													double demand = data.getDemands().get(node_in_remove_pos_act-1);
-													r_updated.remove(position_to_start_rem);
-													double currentLoad = (double) r_updated.getAttribute(RouteAttribute.LOAD);
-													r_updated.setAttribute(RouteAttribute.LOAD, currentLoad - demand);
+													if(node_in_remove_pos_act != -1) {
+														double demand = data.getDemands().get(node_in_remove_pos_act-1);
+														r_updated.remove(position_to_start_rem);
+														double currentLoad = (double) r_updated.getAttribute(RouteAttribute.LOAD);
+														r_updated.setAttribute(RouteAttribute.LOAD, currentLoad - demand);
+													}
+													
 												}
 						
 												double currentCost = (double) r_updated.getAttribute(RouteAttribute.COST);
