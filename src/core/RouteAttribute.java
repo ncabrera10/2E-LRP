@@ -22,4 +22,7 @@ public enum RouteAttribute{
 
 	N_CUSTOMERS,
 
+	SIMILARITY,
+	
+	SATELLITE,
 }
