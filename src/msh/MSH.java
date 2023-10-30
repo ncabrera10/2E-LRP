@@ -2,7 +2,6 @@ package msh;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -103,6 +102,7 @@ public class MSH implements Algorithm{
 			numberOfIterations += sampling.getNuberOfDrawnSamples();
 		}
 				
+		/**
 		for(Future<Solution> f:bounds){
 			if(f!=null){
 				try {
@@ -118,6 +118,7 @@ public class MSH implements Algorithm{
 				}
 			}
 		}
+		*/
 		
 		//Assemble the final solution	
 		
@@ -146,8 +147,7 @@ public class MSH implements Algorithm{
 			numberOfIterations += sampling.getNuberOfDrawnSamples();
 		}
 		
-		//Get the best bound
-
+		/**
 		for(Future<Solution> f:bounds){
 			if(f!=null){
 				try {
@@ -163,6 +163,7 @@ public class MSH implements Algorithm{
 				}
 			}
 		}
+		*/
 
 	}
 
@@ -199,6 +200,9 @@ public class MSH implements Algorithm{
 	 */
 	public void setNumberOfIterations(int numberOfIterations) {
 		this.numberOfIterations = numberOfIterations;
+	}
+	public OptimizationSense getSense() {
+		return sense;
 	}
 	
 	

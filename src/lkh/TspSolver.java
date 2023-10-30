@@ -1,17 +1,17 @@
 package lkh;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import core.DistanceMatrix;
+import ilog.concert.IloException;
+import ilog.concert.IloLinearNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cplex.IloCplex;
 
-/**
- * This class is an implementation of the LKH procedure to improve the tsp tours
- * @author nick0
- *
- */
-public class LKH {
+public class TspSolver {
 
-    // The number of nodes of this instance
+	 // The number of nodes of this instance
     private int size;
     
     // The current tour solution
@@ -22,13 +22,12 @@ public class LKH {
 	 */
 	private final DistanceMatrix distances;
     
-    /**
-     * Constructor that creates an instance of the Lin-Kerninghan problem without
-     * the optimizations. (Basically the tour it has is the drunken sailor)
+	/**
+     * Constructor that creates an instance of the the TSP solver
      * @param ArrayList<Point> the coordinates of all the cities
      * @param ArrayList<Integer> the id of all the cities
      */ 
-    public LKH(DistanceMatrix distances, ArrayList<Integer> tspTour) { 
+    public TspSolver(DistanceMatrix distances, ArrayList<Integer> tspTour) { 
     	this.distances = distances;
         this.size = tspTour.size();
         this.tour = new int[tspTour.size()];
@@ -37,7 +36,180 @@ public class LKH {
         }
         	
     }
+    
 
+    /**
+     * This method tries to improve the tour either using an exact or an heuristic algorithm
+     */
+    public void improveTour() {
+    	
+    	if(size <= 4) {
+    		
+    		IloCplex cplex;
+    		
+    		try {
+
+    			//Create cplex instance
+    			
+    			cplex = new IloCplex();
+    			
+    			
+    			//Define the objective
+    			
+    			IloLinearNumExpr of = cplex.linearNumExpr();
+    			
+    			//Creates the variables:
+    			
+    			Hashtable<String,IloNumVar> vars_x = new Hashtable<String,IloNumVar>();
+    			Hashtable<String,IloNumVar> vars_u = new Hashtable<String,IloNumVar>();
+    			
+    			for(int i=0; i< this.size; i++) {
+    				vars_u.put("u_"+tour[i], cplex.numVar(0,size,"u_"+tour[i]));
+    			}
+    			
+    			int counter = 0;
+    			for(int i=0; i < this.size; i++) {
+    				for(int j=0; j < this.size; j++) {
+    					if(i != j) {
+    						vars_x.put("x_"+tour[i]+"-"+tour[j], cplex.boolVar("x_"+tour[i]+"_"+tour[j]));
+    						counter++;
+    					}
+    				}
+    			}
+    			
+    			IloNumVar[] mipStart_a = cplex.boolVarArray(counter);
+    			double[] values = new double[counter];
+    			
+    			for(int i = 0; i < this.size - 1; i++) {
+    				 mipStart_a[i] = vars_x.get("x_"+tour[i]+"-"+tour[i+1]);
+    				 values[i] = 1;
+    			}
+    			 mipStart_a[this.size - 1] = vars_x.get("x_"+tour[size-1]+"-"+tour[0]);
+    			 values[this.size - 1] = 1;
+    			
+    			for(int i=0; i < this.size; i++) {
+    				for(int j=0; j < this.size; j++) {
+    					if(i != j) {
+    						of.addTerm(distances.getDistance(tour[i],tour[j]),vars_x.get("x_"+tour[i]+"-"+tour[j]));
+    					}
+    				}
+    			}
+    			
+    			cplex.addMinimize(of);
+    			
+    			//Define constraints:
+    			
+    				//Balance constraints:
+    				
+    					Hashtable<Integer,IloLinearNumExpr> balanceOut = new Hashtable<Integer,IloLinearNumExpr>();
+    					Hashtable<Integer,IloLinearNumExpr> balanceIn = new Hashtable<Integer,IloLinearNumExpr>();
+    					
+    					
+    					for(int i=0; i< this.size; i++) {
+    						balanceOut.put(tour[i],cplex.linearNumExpr());
+    						balanceIn.put(tour[i],cplex.linearNumExpr());
+    						
+    					}
+    					
+    				//MTZ constraints:
+    					
+    					Hashtable<String,IloLinearNumExpr> mtz = new Hashtable<String,IloLinearNumExpr>();
+    					
+    					for(int i=1; i < this.size; i++) {
+    						for(int j=1; j < this.size; j++) {
+    							if(i != j) {
+    								mtz.put(tour[i]+"-"+tour[j], cplex.linearNumExpr());
+    							}
+    						}
+    					}
+
+    			// Populate the constraints:
+    					
+    				//Balance constraints: 
+    					
+    					for(int i=0; i< this.size; i++) {
+    						
+    						for(int j=0; j< this.size; j++) {
+    							
+    							int tail = this.tour[i];
+    							int head = this.tour[j];
+    				
+    							if(i != j) {
+    								balanceOut.get(tail).addTerm(1, vars_x.get("x_"+tail+"-"+head));
+    								balanceIn.get(tail).addTerm(1, vars_x.get("x_"+head+"-"+tail));
+    							}
+    							
+    						}
+    					
+    					}
+    					
+    					for(int i=0; i< this.size; i++) {
+    						cplex.addEq(1, balanceOut.get(tour[i]),"Out_"+tour[i]);
+    						cplex.addEq(1, balanceIn.get(tour[i]),"In_"+tour[i]);
+    					}
+    					
+    				//MTZ constraints:
+    					
+    					for(int i=1; i < this.size; i++) {
+    						for(int j=1; j < this.size; j++) {
+    							if(i != j) {
+    								mtz.get(tour[i]+"-"+tour[j]).addTerm(1,vars_u.get("u_"+tour[i]));
+    								mtz.get(tour[i]+"-"+tour[j]).addTerm(-1,vars_u.get("u_"+tour[j]));
+    								mtz.get(tour[i]+"-"+tour[j]).addTerm(size,vars_x.get("x_"+tour[i]+"-"+tour[j]));
+    								cplex.addLe(mtz.get(tour[i]+"-"+tour[j]),size-1,"MTZ_"+tour[i]+"_"+tour[j]);
+    							}
+    						}
+    					}
+    						
+    				//Solve the model:
+    					
+    					cplex.setOut(null); //Disable cplex output
+    					cplex.setParam(IloCplex.Param.Threads,1);
+    					 
+    					if(cplex.solve()) {
+    						int[] newTour = new int[this.size];
+    						
+    						boolean buildTour = true;
+    						int moves = 0;
+    						int actNode = tour[0];
+    						
+    						while(buildTour && moves <= size) {
+    							newTour[moves] = actNode;
+    							boolean change = true;
+    							for(int i=0; i < this.size && change; i++) {
+    								if(vars_x.containsKey("x_"+actNode+"-"+tour[i])) {
+    									if(cplex.getValue(vars_x.get("x_"+actNode+"-"+tour[i])) > 0.5) {
+    										actNode = tour[i];
+    										change = false;
+    									}
+    								}
+    								
+    							}
+    							if(actNode == tour[0]) {
+    								buildTour = false;
+    							}
+    							moves++;
+    						}
+    						
+    						for(int i=0; i< this.size; i++) {
+    							this.tour[i] = newTour[i];
+    						}
+    						
+    					}
+    		cplex.close();		
+    		} catch (IloException e) {
+    			e.printStackTrace();
+    		} 
+    	
+    	}else { //Run the LKH algorithm
+    		
+    		this.runAlgorithm();
+    		
+    	}
+    	
+		
+    	
+    }
     
     /**
      * This function returns the current tour distance
@@ -55,7 +227,42 @@ public class LKH {
         
         return sum;
     }
-
+    
+    /**
+     * This function returns a string with the current tour and its distance
+     * @param None
+     * @return String with the representation of the tour
+     */
+    public String toString() {
+        String str = "[" + this.getDistance() + "] : ";
+        boolean add = false;
+        for(int city: this.tour) {
+            if(add) {
+                str += " => " + city;
+            } else {
+                str += city;
+                add = true;
+            }
+        }
+        return str;
+    }
+	
+    /**
+     * This function gets the index of the node given the actual number of the node in the tour
+     * @param the node id
+     * @return the index on the tour
+     */
+    public int getIndex(int node) {
+    	int i = 0;
+    	for(int t: tour) {
+    		if(node == t) {
+    			return i;
+    		}
+    		i++;
+    	}
+    	return -1;
+    }
+    
     /**
      * This function is the crown jewel of this class, it tries to optimize
      * the current tour
@@ -488,40 +695,4 @@ public class LKH {
 		return true;
 	}
     
-    
-   
-    /**
-     * This function returns a string with the current tour and its distance
-     * @param None
-     * @return String with the representation of the tour
-     */
-    public String toString() {
-        String str = "[" + this.getDistance() + "] : ";
-        boolean add = false;
-        for(int city: this.tour) {
-            if(add) {
-                str += " => " + city;
-            } else {
-                str += city;
-                add = true;
-            }
-        }
-        return str;
-    }
-	
-    /**
-     * This function gets the index of the node given the actual number of the node in the tour
-     * @param the node id
-     * @return the index on the tour
-     */
-    public int getIndex(int node) {
-    	int i = 0;
-    	for(int t: tour) {
-    		if(node == t) {
-    			return i;
-    		}
-    		i++;
-    	}
-    	return -1;
-    }
 }

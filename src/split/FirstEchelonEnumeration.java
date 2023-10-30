@@ -46,12 +46,13 @@ public class FirstEchelonEnumeration implements Split{
 		}
 		
 		ArrayList<ArrayList<Integer>> listComplete = new ArrayList<ArrayList<Integer>>();
-		
+		ArrayList<Integer> partialList = new ArrayList<Integer>();
+
 		int n = arr.length;
 		int N = (int) Math.pow(2d, Double.valueOf(n));  
 		for (int i = 1; i < N; i++) {
 		    String code = Integer.toBinaryString(N | i).substring(1);
-		    ArrayList<Integer> partialList = new ArrayList<Integer>();
+		    partialList = new ArrayList<Integer>();
 		    for (int j = 0; j < n; j++) {
 		        if (code.charAt(j) == '1') {
 		            partialList.add(arr[j]);
@@ -61,6 +62,7 @@ public class FirstEchelonEnumeration implements Split{
 		    listComplete.add(partialList);
 		}
 		
+		
 		for(ArrayList<Integer> currentList : listComplete) {
 			
 			if(currentList.size() <= 10) {
@@ -68,7 +70,7 @@ public class FirstEchelonEnumeration implements Split{
 				currentList.add(0);
 				
 				LKH lkh = new LKH(distances,currentList);
-	
+				
 				if(currentList.size()>2) {
 					lkh.runAlgorithm();
 				}
@@ -94,6 +96,7 @@ public class FirstEchelonEnumeration implements Split{
 				of+=cost;
 				r.setAttribute(RouteAttribute.LOAD, load);
 				s.addRoute(r);
+
 			}
 		}
 		

@@ -29,7 +29,7 @@ import msh.AssemblyFunction;
 import msh.CPLEXSetPartitioningSolver;
 import msh.MSH;
 import msh.OrderFirstSplitSecondSampling;
-import split.FirstEchelonEnumeration;
+import split.FirstEchelonEnumerationMTZ;
 import split.FirstEchelonEnumerationSingle;
 import split.SecondEchelonLKH;
 import split.SecondEchelonSplit;
@@ -197,7 +197,7 @@ public class Solver_cplex {
 				
 			// 7. Initializes the split algorithm for the FE: 
 				
-				Split split_fe = new FirstEchelonEnumeration(distances_depot_satellites);
+				Split split_fe = new FirstEchelonEnumerationMTZ(distances_depot_satellites);
 	
 			// 8. Calculates the number of iterations:	
 				
@@ -352,7 +352,6 @@ public class Solver_cplex {
 			
 			msh.run_sampling();
 	
-			
 			if(GlobalParameters.PRINT_IN_CONSOLE) {
 				System.out.println("End of the sampling step...");
 			}
@@ -560,6 +559,7 @@ public class Solver_cplex {
 					pw.println("SizeOfPool;"+msh.getPoolSize());
 					pw.println("SamplingTime(s);"+cpu_msh_sampling);
 					pw.println("AssemblyTime(s);"+cpu_msh_assembly);
+					pw.println("TotalCostPreMIP;"+assembler.objectiveFunctionPreMIP);
 				
 					System.out.println("-----------------------------------------------");
 					
